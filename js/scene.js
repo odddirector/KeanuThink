@@ -104,7 +104,7 @@ var createScene = async function () {
 
 		// document.querySelector("body").addEventListener("theBusIsHalfWay", updateCity, { meshes: cityMeshes });
 
-		
+
 
 		// document.querySelector("body").addEventListener(theBusIsHalfWay, updateCity(cityMeshes));
 
@@ -118,24 +118,24 @@ var createScene = async function () {
 
 		loadedCityMeshes = cityMeshes;
 
-		
-		
+
+
 		// document.querySelector("body").addEventListener("theBusIsHalfWay", (event) => {
 		// 	console.log("the bus is half way");
 
 		// 	//console.log(loadedCityMeshes[0].getChildMeshes());
 		// 	// cityMeshes[0].getChildMeshes().forEach(function (mesh) {
-				
+
 		// 	// 	mesh.position.z += 100;
 		// 	// });
 		// });
-	
 
-		console.log(loadedCityMeshes); 
-		console.log(cityMeshes); 
+
+		console.log(loadedCityMeshes);
+		console.log(cityMeshes);
 
 		cityMeshes[0].getChildMeshes().forEach(function (mesh) {
-			
+
 
 			let mass;
 
@@ -150,7 +150,7 @@ var createScene = async function () {
 					x: mesh.position.x,
 					y: mesh.position.y,
 					z: mesh.position.z
-				}, 
+				},
 				rotationQuaternion: {
 					x: mesh.rotationQuaternion.x,
 					y: mesh.rotationQuaternion.y,
@@ -158,10 +158,20 @@ var createScene = async function () {
 					w: mesh.rotationQuaternion.w
 				}
 			};
-			
+
 
 			mesh.parent = null;
 			mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.MeshImpostor, { mass: mass, friction: 1, restitution: 0.7 });
+
+			for (let index = 1; index < 5; index++) {
+				var newInstance = mesh.createInstance("i" + index);
+				// Here you could change the properties of your individual instance,
+				// for example to form a diagonal line of instances:
+				//  newInstance.position.x = index;
+				 newInstance.position.z = mesh.position.z + (10 * index);
+				 newInstance.physicsImpostor = new BABYLON.PhysicsImpostor(newInstance, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.5, friction: 1, restitution: 0.7 });
+				// See below for more details on what can be changed.
+			}
 
 		});
 
@@ -187,7 +197,7 @@ var createScene = async function () {
 	});
 
 	var time = 0;
-	let theBusIsHalfWaydispatchedOnce = false; 
+	let theBusIsHalfWaydispatchedOnce = false;
 
 	function repositionCity(meshes) {
 		console.log("reposition the city");
@@ -198,11 +208,9 @@ var createScene = async function () {
 		meshes.forEach(function (mesh) {
 			// console.log(mesh.PhysicsImpostor);
 			// console.log("mesh.rotation");
-			
-
 
 			// reset positions and rotatins f-up after collisions
-			if(loadedCityOriginalPositions[mesh.id] != undefined) {
+			if (loadedCityOriginalPositions[mesh.id] != undefined) {
 				mesh.position.x = loadedCityOriginalPositions[mesh.id].position.x;
 				mesh.position.y = loadedCityOriginalPositions[mesh.id].position.y;
 				mesh.position.z = loadedCityOriginalPositions[mesh.id].position.z;
@@ -212,8 +220,8 @@ var createScene = async function () {
 				mesh.rotationQuaternion.z = loadedCityOriginalPositions[mesh.id].rotationQuaternion.z;
 				mesh.rotationQuaternion.w = loadedCityOriginalPositions[mesh.id].rotationQuaternion.w;
 			}
-			
-			
+
+
 			mesh.position.z += 50;
 		});
 	}
@@ -358,13 +366,13 @@ var createScene = async function () {
 
 			let positionInt = parseInt(chassisMesh.position.z);
 			let cityRepositionFrequency = 50;
-	
-			if ( positionInt > 20 && positionInt % 30 == 0 && theBusIsHalfWaydispatchedOnce != true) {
+
+			if (positionInt > 20 && positionInt % 30 == 0 && theBusIsHalfWaydispatchedOnce != true) {
 				theBusIsHalfWaydispatchedOnce = true;
 				console.log("reposition city");
 				repositionCity(loadedCityMeshes);
 			}
-			if ( positionInt > 20 && positionInt % 50 == 0) {
+			if (positionInt > 20 && positionInt % 50 == 0) {
 				theBusIsHalfWaydispatchedOnce = false;
 			}
 
