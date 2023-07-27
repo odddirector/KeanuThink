@@ -97,6 +97,7 @@ var createScene = async function () {
 	// const theBusIsHalfWay = new CustomEvent("theBusIsHalfWay");
 
 	let loadedCityMeshes;
+	let loadedCityOriginalPositions = {};
 
 	//import the city 
 	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "city_test_11.glb", scene, function (cityMeshes) {
@@ -134,6 +135,7 @@ var createScene = async function () {
 		console.log(cityMeshes); 
 
 		cityMeshes[0].getChildMeshes().forEach(function (mesh) {
+			
 
 			let mass;
 
@@ -142,6 +144,20 @@ var createScene = async function () {
 			} else {
 				mass = 0.5;
 			}
+
+			loadedCityOriginalPositions[mesh.id] = {
+				position: {
+					x: mesh.position.x,
+					y: mesh.position.y,
+					z: mesh.position.z
+				}, 
+				rotationQuaternion: {
+					x: mesh.rotationQuaternion.x,
+					y: mesh.rotationQuaternion.y,
+					z: mesh.rotationQuaternion.z,
+					w: mesh.rotationQuaternion.w
+				}
+			};
 			
 
 			mesh.parent = null;
@@ -177,8 +193,27 @@ var createScene = async function () {
 		console.log("reposition the city");
 		//console.log(meshes);
 
+		console.log(loadedCityOriginalPositions);
+
 		meshes.forEach(function (mesh) {
-			//console.log(mesh.position.z);
+			// console.log(mesh.PhysicsImpostor);
+			// console.log("mesh.rotation");
+			
+
+
+			// reset positions and rotatins f-up after collisions
+			if(loadedCityOriginalPositions[mesh.id] != undefined) {
+				mesh.position.x = loadedCityOriginalPositions[mesh.id].position.x;
+				mesh.position.y = loadedCityOriginalPositions[mesh.id].position.y;
+				mesh.position.z = loadedCityOriginalPositions[mesh.id].position.z;
+
+				mesh.rotationQuaternion.x = loadedCityOriginalPositions[mesh.id].rotationQuaternion.x;
+				mesh.rotationQuaternion.y = loadedCityOriginalPositions[mesh.id].rotationQuaternion.y;
+				mesh.rotationQuaternion.z = loadedCityOriginalPositions[mesh.id].rotationQuaternion.z;
+				mesh.rotationQuaternion.w = loadedCityOriginalPositions[mesh.id].rotationQuaternion.w;
+			}
+			
+			
 			mesh.position.z += 50;
 		});
 	}
@@ -324,12 +359,12 @@ var createScene = async function () {
 			let positionInt = parseInt(chassisMesh.position.z);
 			let cityRepositionFrequency = 50;
 	
-			if ( positionInt > 40 && positionInt % 50 == 0 && theBusIsHalfWaydispatchedOnce != true) {
+			if ( positionInt > 20 && positionInt % 30 == 0 && theBusIsHalfWaydispatchedOnce != true) {
 				theBusIsHalfWaydispatchedOnce = true;
 				console.log("reposition city");
 				repositionCity(loadedCityMeshes);
 			}
-			if ( positionInt > 40 && positionInt % 70 == 0) {
+			if ( positionInt > 20 && positionInt % 50 == 0) {
 				theBusIsHalfWaydispatchedOnce = false;
 			}
 
