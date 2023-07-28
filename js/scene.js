@@ -163,7 +163,7 @@ var createScene = async function () {
 			mesh.parent = null;
 			mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.MeshImpostor, { mass: mass, friction: 1, restitution: 0.7 });
 
-			for (let index = 1; index < 5; index++) {
+			for (let index = 1; index < 15; index++) {
 				var newInstance = mesh.createInstance("i" + index);
 				// Here you could change the properties of your individual instance,
 				// for example to form a diagonal line of instances:
@@ -198,32 +198,67 @@ var createScene = async function () {
 
 	var time = 0;
 	let theBusIsHalfWaydispatchedOnce = false;
+	let repositionIncrement = 100;
+	let repositionCounter = 0;
 
-	function repositionCity(meshes) {
-		console.log("reposition the city");
+	function repositionCity(meshes, busPoZition) {
+		console.log("==================== reposition the city");
 		//console.log(meshes);
 
 		console.log(loadedCityOriginalPositions);
+
+		repositionCounter++;
+
+		console.log(repositionCounter);
 
 		meshes.forEach(function (mesh) {
 			// console.log(mesh.PhysicsImpostor);
 			// console.log("mesh.rotation");
 
+			console.log(mesh);
 			// reset positions and rotatins f-up after collisions
 			if (loadedCityOriginalPositions[mesh.id] != undefined) {
-				mesh.position.x = loadedCityOriginalPositions[mesh.id].position.x;
-				mesh.position.y = loadedCityOriginalPositions[mesh.id].position.y;
-				mesh.position.z = loadedCityOriginalPositions[mesh.id].position.z;
+				
+				if(mesh.position.z < busPoZition - 20) {
 
-				mesh.rotationQuaternion.x = loadedCityOriginalPositions[mesh.id].rotationQuaternion.x;
-				mesh.rotationQuaternion.y = loadedCityOriginalPositions[mesh.id].rotationQuaternion.y;
-				mesh.rotationQuaternion.z = loadedCityOriginalPositions[mesh.id].rotationQuaternion.z;
-				mesh.rotationQuaternion.w = loadedCityOriginalPositions[mesh.id].rotationQuaternion.w;
+					mesh.position.x = loadedCityOriginalPositions[mesh.id].position.x;
+					mesh.position.y = loadedCityOriginalPositions[mesh.id].position.y;
+					mesh.position.z = loadedCityOriginalPositions[mesh.id].position.z;
+
+					mesh.rotationQuaternion.x = loadedCityOriginalPositions[mesh.id].rotationQuaternion.x;
+					mesh.rotationQuaternion.y = loadedCityOriginalPositions[mesh.id].rotationQuaternion.y;
+					mesh.rotationQuaternion.z = loadedCityOriginalPositions[mesh.id].rotationQuaternion.z;
+					mesh.rotationQuaternion.w = loadedCityOriginalPositions[mesh.id].rotationQuaternion.w;
+				}
+
+					for (let index = 0; index < mesh.instances.length; index++) {
+
+						let instance = mesh.instances[index];
+						
+						if(instance.position.z < busPoZition - 20) {
+
+							instance.position.x = loadedCityOriginalPositions[mesh.id].position.x;
+							instance.position.y = loadedCityOriginalPositions[mesh.id].position.y;
+							instance.position.z = loadedCityOriginalPositions[mesh.id].position.z + (10 * index) + (busPoZition + repositionIncrement);
+
+							instance.rotationQuaternion.x = loadedCityOriginalPositions[mesh.id].rotationQuaternion.x;
+							instance.rotationQuaternion.y = loadedCityOriginalPositions[mesh.id].rotationQuaternion.y;
+							instance.rotationQuaternion.z = loadedCityOriginalPositions[mesh.id].rotationQuaternion.z;
+							instance.rotationQuaternion.w = loadedCityOriginalPositions[mesh.id].rotationQuaternion.w;
+						}
+						
+					}
+				
 			}
 
+			// move all the buildings forward 
+			mesh.position.z = busPoZition + repositionIncrement;
 
-			mesh.position.z += 50;
+			
 		});
+
+		console.log("done repositioning");
+
 	}
 
 	//register prerender callback to initiate 
@@ -367,13 +402,22 @@ var createScene = async function () {
 			let positionInt = parseInt(chassisMesh.position.z);
 			let cityRepositionFrequency = 50;
 
-			if (positionInt > 20 && positionInt % 30 == 0 && theBusIsHalfWaydispatchedOnce != true) {
-				theBusIsHalfWaydispatchedOnce = true;
-				console.log("reposition city");
-				repositionCity(loadedCityMeshes);
-			}
-			if (positionInt > 20 && positionInt % 50 == 0) {
-				theBusIsHalfWaydispatchedOnce = false;
+			
+
+			// if (positionInt >= 50 && + positionInt <= 50 + busPositionIncrementCache) {
+			// 	console.log("position 50");
+			// }
+
+
+			if(positionInt > 5) {
+				if (positionInt % 50 == 0 && theBusIsHalfWaydispatchedOnce == false) {
+					theBusIsHalfWaydispatchedOnce = true;
+					console.log("reposition city");
+					repositionCity(loadedCityMeshes, positionInt);
+				}
+				if (positionInt % 51 == 0) {
+					theBusIsHalfWaydispatchedOnce = false;
+				}
 			}
 
 
