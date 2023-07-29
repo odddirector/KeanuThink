@@ -141,13 +141,13 @@ var createScene = async function () {
 		cityMeshes[0].getChildMeshes().forEach(function (mesh) {
 
 
-			let mass;
+			let mass = 0.5;
 
-			if (mesh.name.search("building") != -1) {
-				mass = 100;
-			} else {
-				mass = 0.5;
-			}
+			// if (mesh.name.search("building") != -1) {
+			// 	mass = 100;
+			// } else {
+			// 	mass = 0.5;
+			// }
 
 			if (mesh.name.search("bridge") != -1) {
 				mass = 0;
@@ -224,18 +224,25 @@ var createScene = async function () {
 	var time = 0;
 	let theBusIsHalfWaydispatchedOnce = false;
 	let repositionIncrement = 70;
-	let repositionCounter = -1;
+	let repositionCounter = -2;
 
 	function repositionCity(meshes, busPoZition) {
-		console.log("==================== reposition the city");
+
+		
+
+		//console.log("==================== reposition the city");
 		//console.log(meshes);
 
-		console.log("loadedCityOriginalPositions");
-		console.log(loadedCityOriginalPositions);
+		//console.log("loadedCityOriginalPositions");
+		//console.log(loadedCityOriginalPositions);
 
-		if(repositionCounter == 3) {
+		repositionCounter++;
+
+		if(repositionCounter >= 2) {
 			repositionCounter = -1;
 		}
+
+		console.log("repositionCounter = "+repositionCounter);
 		
 		//console.log(repositionCounter);
 
@@ -244,16 +251,14 @@ var createScene = async function () {
 			// console.log(mesh.PhysicsImpostor);
 			// console.log("mesh.rotation");
 
-			console.log(mesh);
+			//console.log(mesh);
 			// reset positions and rotatins f-up after collisions
 			if (loadedCityOriginalPositions[mesh.id] != undefined) {
 				
 		
 
 					// reposition the city mesh itself 
-
-
-					console.log("repositionCounter = "+ repositionCounter);
+					//console.log("repositionCounter = "+ repositionCounter);
 
 					if (repositionCounter == -1) {
 
@@ -277,18 +282,23 @@ var createScene = async function () {
 						//for (let index = 0; index < mesh.instances.length; index++) {
 
 							if (mesh.instances.length != 0) {
-								
-								console.log("mesh.instances");
-								console.log(mesh.instances);
 
+								console.log("mesh.instances");
+								//console.log(mesh.instances);
+
+								console.log("repositionCounter = "+repositionCounter);
+
+								// let instance;
+								// if (repositionCounter == 2) {
+								// 	instance = mesh.instances[0];
+								// }
+								// if (repositionCounter == 3) {
+								// 	instance = mesh.instances[1];
+								// }
+
+								
 								let instance = mesh.instances[repositionCounter];
 
-								// if (repositionCounter == 0) {
-								// 	let increment = repositionIncrement * 2;
-								// } else if (repositionCounter == 1) {
-								// 	let increment = repositionIncrement * 3;
-								// }
-								
 								instance.position.x = loadedCityOriginalPositions[mesh.id].position.x;
 								instance.position.y = loadedCityOriginalPositions[mesh.id].position.y;
 								instance.position.z = loadedCityOriginalPositions[mesh.id].position.z + (busPoZition + repositionIncrement);
@@ -312,9 +322,9 @@ var createScene = async function () {
 			
 		});
 
-		repositionCounter++;
 
-		console.log("done repositioning");
+
+		//console.log("done repositioning");
 		
 
 	}
@@ -474,7 +484,7 @@ var createScene = async function () {
 					console.log("reposition city");
 					repositionCity(loadedCityMeshes, positionInt);
 				}
-				if (positionInt % 51 == 0) {
+				if (positionInt % 36 == 0) {
 					theBusIsHalfWaydispatchedOnce = false;
 				}
 			}
