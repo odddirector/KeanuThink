@@ -491,12 +491,13 @@ var createScene = async function () {
 
 
 			// ----------- infinite ground planes 
+			let threshold = 50;
 			// once you cross the ground plane edge, move it after the groundTwo plane 
-			if (chassisMesh.position.z >= ground.position.z + ground.getBoundingInfo().boundingBox.maximum.z) {
+			if (chassisMesh.position.z >= ground.position.z + ground.getBoundingInfo().boundingBox.maximum.z + threshold) {
 				ground.position.z += (ground.getBoundingInfo().boundingBox.maximum.z * 4);
 			}
 			// onc you cross the groundTwo plane, move it right after the ground plane 
-			if (chassisMesh.position.z >= groundTwo.position.z + groundTwo.getBoundingInfo().boundingBox.maximum.z) {
+			if (chassisMesh.position.z >= groundTwo.position.z + groundTwo.getBoundingInfo().boundingBox.maximum.z + threshold) {
 				groundTwo.position.z += (groundTwo.getBoundingInfo().boundingBox.maximum.z * 4);
 			}
 
