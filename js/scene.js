@@ -101,7 +101,7 @@ var createScene = async function () {
 
 	//import the city 
 	
-	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "city_built_6.glb", scene, function (cityMeshes) {
+	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "city_built_6_double_3.glb", scene, function (cityMeshes) {
 
 		console.log("cityMeshes");
 		console.log(cityMeshes);
