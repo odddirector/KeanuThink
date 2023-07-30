@@ -93,6 +93,41 @@ var createScene = async function () {
 		createVehicle(scene, new BABYLON.Vector3(0, 4, -20), ZERO_QUATERNION, newMeshes);
 	});
 
+	let car;
+	let carSaved = null;
+	let savedCars = [];
+	let cloneCar = null;
+	let cloneCarInitialPosition = {
+		x: 2,
+		y: 0,
+		z: 80
+	};
+
+	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "car_test_2.glb", scene, function (carMeshes, particleSystems, skeletons, animationGroups) {
+		car = carMeshes[0].getChildMeshes()[0];
+		// car.position.y = 4;
+		car.position.x = 2;
+		car.position.z = cloneCarInitialPosition.z;
+		car.parent = null;
+		// console.log("car");
+		// console.log(car);
+		
+		// savedCars.push({...car});
+		// savedCars[0].physicsImpostor = new BABYLON.PhysicsImpostor(savedCars[0], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+
+		// console.log("car");
+		// console.log(car);
+		// console.log("savedCars");
+		// console.log(savedCars);
+
+		cloneCar = car.clone("cloneCar");
+		cloneCar.physicsImpostor = new BABYLON.PhysicsImpostor(cloneCar, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+
+		car.setEnabled(false);
+
+		//BABYLON.applyForce(impostor: PhysicsImpostor, force: Vector3, contactPoint: Vector3)		
+	});
+
 
 	// const theBusIsHalfWay = new CustomEvent("theBusIsHalfWay");
 
@@ -103,8 +138,8 @@ var createScene = async function () {
 	
 	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "city_built_6_double_3.glb", scene, function (cityMeshes) {
 
-		console.log("cityMeshes");
-		console.log(cityMeshes);
+		//console.log("cityMeshes");
+		//console.log(cityMeshes);
 
 		// document.querySelector("body").addEventListener("theBusIsHalfWay", updateCity, { meshes: cityMeshes });
 
@@ -135,8 +170,8 @@ var createScene = async function () {
 		// });
 
 
-		console.log(loadedCityMeshes);
-		console.log(cityMeshes);
+		//console.log(loadedCityMeshes);
+		//console.log(cityMeshes);
 
 		cityMeshes[0].getChildMeshes().forEach(function (mesh) {
 
@@ -242,7 +277,7 @@ var createScene = async function () {
 			repositionCounter = -1;
 		}
 
-		console.log("repositionCounter = "+repositionCounter);
+		//console.log("repositionCounter = "+repositionCounter);
 		
 		//console.log(repositionCounter);
 
@@ -283,10 +318,10 @@ var createScene = async function () {
 
 							if (mesh.instances.length != 0) {
 
-								console.log("mesh.instances");
+								//console.log("mesh.instances");
 								//console.log(mesh.instances);
 
-								console.log("repositionCounter = "+repositionCounter);
+								//console.log("repositionCounter = "+repositionCounter);
 
 								// let instance;
 								// if (repositionCounter == 2) {
@@ -340,7 +375,7 @@ var createScene = async function () {
 		if (vehicleReady) {
 			//get the cars current speed from ammo.js
 			var speed = vehicle.getCurrentSpeedKmHour();
-			//console.log(parseInt(speed)+ " km / h");
+			console.log(parseInt(speed)+ " km/h");
 			var maxSteerVal = 0.2;
 			breakingForce = 0;
 			engineForce = 0;
@@ -481,7 +516,7 @@ var createScene = async function () {
 			if(positionInt > 5) {
 				if (positionInt % 35 == 0 && theBusIsHalfWaydispatchedOnce == false) {
 					theBusIsHalfWaydispatchedOnce = true;
-					console.log("reposition city");
+					//console.log("reposition city");
 					repositionCity(loadedCityMeshes, positionInt);
 				}
 				if (positionInt % 36 == 0) {
@@ -499,6 +534,79 @@ var createScene = async function () {
 			// onc you cross the groundTwo plane, move it right after the ground plane 
 			if (chassisMesh.position.z >= groundTwo.position.z + groundTwo.getBoundingInfo().boundingBox.maximum.z + threshold) {
 				groundTwo.position.z += (groundTwo.getBoundingInfo().boundingBox.maximum.z * 4);
+			}
+
+
+			// if(carSaved == null) {
+				
+				
+			// 	//carSaved = car;
+
+			// 	// carSaved.position.x = 2;
+			// 	// carSaved.position.z = 50;
+			// 	// carSaved.position.y = 0;
+
+			// 	console.log("carSaved");
+			// 	console.log(carSaved);
+
+				
+			// }
+
+			//var currentCar = savedCars[savedCars.length-1];
+			
+			//Force Settings
+			var forceDirection = new BABYLON.Vector3(0, 0, 1);
+			var forceMagnitude = -0.7;
+			var contactLocalRefPoint = BABYLON.Vector3.Zero();
+
+
+			// console.log("currentCar");
+			// console.log(currentCar);
+
+			cloneCar.physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cloneCar.getAbsolutePosition().add(contactLocalRefPoint));
+
+			//console.log(car.position.z);
+
+			if(cloneCar.position.z < chassisMesh.position.z - 10) {
+
+				
+				//carSaved.dispose();
+				//carSaved = null;
+				
+				cloneCar.dispose();
+
+				car.setEnabled(true);
+
+				cloneCar = car.clone("cloneCar");
+				cloneCar.position.z = chassisMesh.position.z + cloneCarInitialPosition.z; 
+			
+				car.setEnabled(false);
+
+				//savedCars.push({...car});
+				//let newCar = savedCars[savedCars.length-1];
+
+				// newCar.parent = null;
+				// newCar.position.x = 2;
+				// newCar.position.z = 80;
+
+				cloneCar.physicsImpostor = new BABYLON.PhysicsImpostor(cloneCar, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+				
+				// console.log("newCar");
+				// console.log("newCar);
+				
+
+				// console.log(car.position.z);
+				// //console.log(chassisMesh.position.z );
+
+				// car.position.x = 2;
+				// car.position.z = 150;
+				// car.position.y = 0;
+
+				// car.rotationQuaternion.x = 0;
+				// car.rotationQuaternion.y = 0;
+				// car.rotationQuaternion.z = 0;
+				// car.rotationQuaternion.w = 0;
+
 			}
 
 		}

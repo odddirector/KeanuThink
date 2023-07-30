@@ -83,8 +83,6 @@ function createChassisMesh(scene, w, l, h, modelMeshes) {
 	console.log("currentMesh");
 	console.log(currentMesh);
 
-
-
 	// currentMesh.forEach((modelMesh) =>
 	// 	{	
 	// 	if (modelMesh != mesh) {
@@ -93,7 +91,7 @@ function createChassisMesh(scene, w, l, h, modelMeshes) {
 	// 	}
 	// );
 
-	// does not parrent all mashes if inside a loop 
+	// this is horrible coding below but I can't figure out how to make it work inside a loop 
 
 	//wheels
 	// currentMesh[0].parent = mesh;
