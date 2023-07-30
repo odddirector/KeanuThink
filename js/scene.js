@@ -89,7 +89,7 @@ var createScene = async function () {
 	//loadTriangleMesh(scene);
 
 	//create our car
-	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "bus_11.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
+	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "bus_textured_2.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
 		createVehicle(scene, new BABYLON.Vector3(0, 4, -20), ZERO_QUATERNION, newMeshes);
 	});
 

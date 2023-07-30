@@ -80,6 +80,19 @@ function createChassisMesh(scene, w, l, h, modelMeshes) {
 
 	let currentMesh = modelMesh.getChildMeshes();
 
+	console.log("currentMesh");
+	console.log(currentMesh);
+
+
+
+	// currentMesh.forEach((modelMesh) =>
+	// 	{	
+	// 	if (modelMesh != mesh) {
+	// 		modelMesh.parent = mesh;
+	// 	}
+	// 	}
+	// );
+
 	// does not parrent all mashes if inside a loop 
 
 	//wheels
@@ -87,6 +100,7 @@ function createChassisMesh(scene, w, l, h, modelMeshes) {
 	// currentMesh[1].parent = mesh;
 	// currentMesh[2].parent = mesh;
 	// currentMesh[3].parent = mesh;
+
 
 	currentMesh[4].parent = mesh;
 	currentMesh[5].parent = mesh;
@@ -98,7 +112,40 @@ function createChassisMesh(scene, w, l, h, modelMeshes) {
 	currentMesh[11].parent = mesh;
 	currentMesh[12].parent = mesh;
 	currentMesh[13].parent = mesh;
-	currentMesh[14].parent = mesh;
+	
+	// bus body
+	//currentMesh[14].parent = mesh;
+
+	currentMesh[15].parent = mesh;
+	currentMesh[16].parent = mesh;
+	currentMesh[17].parent = mesh;
+	currentMesh[18].parent = mesh;
+	currentMesh[19].parent = mesh;
+	currentMesh[20].parent = mesh;
+	currentMesh[21].parent = mesh;
+	currentMesh[22].parent = mesh;
+	currentMesh[23].parent = mesh;
+	currentMesh[24].parent = mesh;
+	currentMesh[25].parent = mesh;
+	currentMesh[26].parent = mesh;
+	currentMesh[27].parent = mesh;
+	currentMesh[28].parent = mesh;
+	currentMesh[29].parent = mesh;
+	currentMesh[30].parent = mesh;
+	currentMesh[31].parent = mesh;
+
+	
+	// currentMesh[4].parent = mesh;
+	// currentMesh[5].parent = mesh;
+	// currentMesh[6].parent = mesh;
+	// currentMesh[7].parent = mesh;
+	// currentMesh[8].parent = mesh;
+	// currentMesh[9].parent = mesh;
+	// currentMesh[10].parent = mesh;
+	// currentMesh[11].parent = mesh;
+	// currentMesh[12].parent = mesh;
+	// currentMesh[13].parent = mesh;
+	// currentMesh[14].parent = mesh;
 
 
 	// modelMeshes.forEach((currentMesh) =>
