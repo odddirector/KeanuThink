@@ -100,33 +100,29 @@ var createScene = async function () {
 	let cloneCarInitialPosition = {
 		x: 2,
 		y: 0,
-		z: 80
+		z: 50
 	};
+	let cars = [];
+	let cloneCars = [];
+	let numberOfCars = 9;
+	let carIterator = 0;
 
-	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "car_test_2.glb", scene, function (carMeshes, particleSystems, skeletons, animationGroups) {
-		car = carMeshes[0].getChildMeshes()[0];
-		// car.position.y = 4;
-		car.position.x = 2;
-		car.position.z = cloneCarInitialPosition.z;
-		car.parent = null;
-		// console.log("car");
-		// console.log(car);
-		
-		// savedCars.push({...car});
-		// savedCars[0].physicsImpostor = new BABYLON.PhysicsImpostor(savedCars[0], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+	for (let index = 0; index < numberOfCars; index++) {
+		BABYLON.SceneLoader.ImportMesh("", "assets/models/cars/", index+".glb", scene, function (carMeshes, particleSystems, skeletons, animationGroups) {
+			cars[index] = carMeshes[0].getChildMeshes()[0];
 
-		// console.log("car");
-		// console.log(car);
-		// console.log("savedCars");
-		// console.log(savedCars);
+			cars[index].position.x = cloneCarInitialPosition.x;
+			cars[index].position.z = cloneCarInitialPosition.z + (20 * index);
+			cars[index].parent = null;
 
-		cloneCar = car.clone("cloneCar");
-		cloneCar.physicsImpostor = new BABYLON.PhysicsImpostor(cloneCar, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+			cloneCars[index] = cars[index].clone("cloneCar");
+			cloneCars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cloneCars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
 
-		car.setEnabled(false);
+			cars[index].setEnabled(false);
+			cloneCars[index].setEnabled(false);
+		});
+	}
 
-		//BABYLON.applyForce(impostor: PhysicsImpostor, force: Vector3, contactPoint: Vector3)		
-	});
 
 
 	// const theBusIsHalfWay = new CustomEvent("theBusIsHalfWay");
@@ -375,7 +371,7 @@ var createScene = async function () {
 		if (vehicleReady) {
 			//get the cars current speed from ammo.js
 			var speed = vehicle.getCurrentSpeedKmHour();
-			console.log(parseInt(speed)+ " km/h");
+			//console.log(parseInt(speed)+ " km/h");
 			var maxSteerVal = 0.2;
 			breakingForce = 0;
 			engineForce = 0;
@@ -554,33 +550,43 @@ var createScene = async function () {
 
 			//var currentCar = savedCars[savedCars.length-1];
 			
+			cloneCars[carIterator].setEnabled(true);
+
 			//Force Settings
 			var forceDirection = new BABYLON.Vector3(0, 0, 1);
 			var forceMagnitude = -0.7;
 			var contactLocalRefPoint = BABYLON.Vector3.Zero();
 
 
-			// console.log("currentCar");
-			// console.log(currentCar);
+	
+			cloneCars[carIterator].physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cloneCars[carIterator].getAbsolutePosition().add(contactLocalRefPoint));
 
-			cloneCar.physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cloneCar.getAbsolutePosition().add(contactLocalRefPoint));
+			console.log(carIterator);
 
-			//console.log(car.position.z);
+			if(cloneCars[carIterator].position.z < chassisMesh.position.z - 10) {
 
-			if(cloneCar.position.z < chassisMesh.position.z - 10) {
-
+				if(carIterator >= numberOfCars-1) {
+					carIterator = 0;
+				} else {
+					carIterator++;
+				}
 				
 				//carSaved.dispose();
 				//carSaved = null;
 				
-				cloneCar.dispose();
+				//cloneCar.dispose();
 
-				car.setEnabled(true);
+				cars[carIterator].setEnabled(true);
 
-				cloneCar = car.clone("cloneCar");
-				cloneCar.position.z = chassisMesh.position.z + cloneCarInitialPosition.z; 
-			
-				car.setEnabled(false);
+				//cloneCar = car.clone("cloneCar");
+				cloneCars[carIterator].position.z = chassisMesh.position.z + cloneCarInitialPosition.z + (10 * carIterator); 
+				cloneCars[carIterator].position.x = cloneCarInitialPosition.x;
+
+				//cloneCar.rotation = BABYLON.Vector3.Zero();
+
+				cars[carIterator].setEnabled(false);
+
+				
 
 				//savedCars.push({...car});
 				//let newCar = savedCars[savedCars.length-1];
@@ -589,7 +595,7 @@ var createScene = async function () {
 				// newCar.position.x = 2;
 				// newCar.position.z = 80;
 
-				cloneCar.physicsImpostor = new BABYLON.PhysicsImpostor(cloneCar, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+				//cloneCar.physicsImpostor = new BABYLON.PhysicsImpostor(cloneCar, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
 				
 				// console.log("newCar");
 				// console.log("newCar);
