@@ -1,3 +1,9 @@
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 var createScene = async function () {
 
 	
@@ -89,7 +95,7 @@ var createScene = async function () {
 
 			cars[index].parent = null;
 
-			cars[index].position.x = cloneCarInitialPosition.x;
+			cars[index].position.x = cloneCarInitialPosition.x - getRandomInt(-0.8, 0.8);
 			cars[index].position.z = cloneCarInitialPosition.z + (distanceBetweenCars * index);
 			
 			lastCarPosition = distanceBetweenCars * index;
@@ -527,6 +533,11 @@ var createScene = async function () {
 
 				if(cars[carIterator].position.z < chassisMesh.position.z - 10) {
 					cars[carIterator].position.z = lastCarPosition + chassisMesh.position.z;
+					let rareRand = 0;
+					if(getRandomInt(0, 8) == 2) {
+						rareRand = -2;
+					} 
+					cars[carIterator].position.x = cloneCarInitialPosition.x - getRandomInt(-0.8, 0.8) + rareRand;
 				}
 			}
 
