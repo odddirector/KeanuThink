@@ -1,11 +1,13 @@
 var createScene = async function () {
 
+	
 	let bombEngaged = false;
+	let speedometer = document.querySelector("#speed");
 
 	// Setup basic scene
 	var scene = new BABYLON.Scene(engine);
 	scene.useRightHandedSystem = true;
-	scene.debugLayer.show();
+	//scene.debugLayer.show();
 
 	//we create our car follow camera in createChassisMesh function
 	//var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10));
@@ -445,7 +447,10 @@ var createScene = async function () {
 		if (vehicleReady) {
 			//get the cars current speed from ammo.js
 			var speed = vehicle.getCurrentSpeedKmHour();
-			console.log(parseInt(speed)+ " km/h");
+			
+			//console.log(parseInt(speed)+ " km/h");
+			speedometer.innerHTML = parseInt(speed)+ " km/h";
+
 			var maxSteerVal = 0.2;
 			breakingForce = 0;
 			engineForce = 0;
