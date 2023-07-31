@@ -7,6 +7,7 @@ function keyup(e) {
 
 //key down event handler
 function keydown(e) {
+    console.log(e.code);
     if (keysActions[e.code]) {
         actions[keysActions[e.code]] = true;
     }

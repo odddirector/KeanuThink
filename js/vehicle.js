@@ -11,7 +11,7 @@ function createVehicle(scene, pos, quat, model) {
 	//create the transform for the vehicle 
 	var transform = new Ammo.btTransform();
 	transform.setIdentity();
-	transform.setOrigin(new Ammo.btVector3(0, 5, 0));
+	transform.setOrigin(new Ammo.btVector3(0, 0, 0));
 	transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
 	var motionState = new Ammo.btDefaultMotionState(transform);
 

@@ -4,6 +4,8 @@ var createScene = async function () {
 	let bombEngaged = false;
 	let speedometer = document.querySelector("#speed");
 
+	let allCarsLoaded = false; 
+
 	// Setup basic scene
 	var scene = new BABYLON.Scene(engine);
 	scene.useRightHandedSystem = true;
@@ -16,7 +18,8 @@ var createScene = async function () {
 
 	//create our light
 	var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0));
-	light.intensity = 0.7;
+	light.intensity = 1;
+	scene.clearColor = new BABYLON.Color3(0.6, 0.8, 1);
 
 	//we store the wheel face UVs once and reuse for each wheel		
 	wheelUV[0] = new BABYLON.Vector4(0, 0, 1, 1);
@@ -33,14 +36,35 @@ var createScene = async function () {
 	//this is the direction of wheel axle
 	wheelAxleCS = new Ammo.btVector3(-1, 0, 0);
 
+
+	var material = new BABYLON.StandardMaterial(scene);
+	material.alpha = 1;
+	material.diffuseColor = new BABYLON.Color3(1, 0.856233, 0.800358);	
+	
+
 	//create our ground floor
 	var ground = BABYLON.Mesh.CreateGround("ground", 460, 460, 2);
+	console.log("ground");
+	console.log(ground);
 	ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0.7 });
-	ground.material = new BABYLON.GridMaterial("groundMaterial");
+	
+	ground.material = material;
+	//const roadMaterial = new BABYLON.StandardMaterial("roadMaterial", scene);
+	// roadMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/road_texture_2.png", scene);
+	// roadMaterial.diffuseTexture.uScale = 0.6;
+	// roadMaterial.diffuseTexture.vScale = 0.6;
+	// console.log(roadMaterial.diffuseTexture);
+	// roadMaterial.uOffset = -roadMaterial.uScale*.5;
+	// roadMaterial.vOffset = -roadMaterial.vScale*.5;
+	//ground.material = roadMaterial;
+
+	
 
 	let groundTwo = BABYLON.Mesh.CreateGround("ground", 460, 460, 2);
 	groundTwo.physicsImpostor = new BABYLON.PhysicsImpostor(groundTwo, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0.7 });
 	groundTwo.position.z = 460;
+
+	groundTwo.material = material;
 
 	//import the bus model 
 	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "bus_textured_2.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
@@ -49,7 +73,7 @@ var createScene = async function () {
 
 
 	let cloneCarInitialPosition = {
-		x: 2,
+		x: 2.5,
 		y: 0,
 		z: 0
 	};
@@ -71,7 +95,13 @@ var createScene = async function () {
 			lastCarPosition = distanceBetweenCars * index;
 
 			cars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
-	
+			
+			if(index == numberOfCars-1) {
+				// a hack to prevent a physicsImpostor undefined error inside the render  
+				setTimeout(() => {
+					allCarsLoaded = true;
+				}, 1000);
+			}
 		});
 		
 	}
@@ -82,7 +112,7 @@ var createScene = async function () {
 
 	//import the city 
 
-	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "city_built_6_double_3.glb", scene, function (cityMeshes) {
+	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "city_pre_6.glb", scene, function (cityMeshes) {
 
 		loadedCityMeshes = cityMeshes;
 
@@ -256,7 +286,7 @@ var createScene = async function () {
 
 		// explode the bus
 		var radius = 20;
-		var strength = 20;
+		var strength = 10;
 		var physicsHelper = new BABYLON.PhysicsHelper(scene);
 
 		console.log("applyRadialExplosionImpulse");
@@ -484,7 +514,7 @@ var createScene = async function () {
 			var contactLocalRefPoint = BABYLON.Vector3.Zero();
 
 			// does not work in a loop
-			if (typeof cars[7] !== "undefined") {
+			if (allCarsLoaded) {
 				cars[0].physicsImpostor.setLinearVelocity(forceDirection);
 				cars[1].physicsImpostor.setLinearVelocity(forceDirection);
 				cars[2].physicsImpostor.setLinearVelocity(forceDirection);
