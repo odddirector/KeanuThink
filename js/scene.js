@@ -100,27 +100,43 @@ var createScene = async function () {
 	let cloneCarInitialPosition = {
 		x: 2,
 		y: 0,
-		z: 50
+		z: 0
 	};
 	let cars = [];
 	let cloneCars = [];
 	let numberOfCars = 9;
 	let carIterator = 0;
+	let distanceBetweenCars = 20;
+	let lastCarPosition;
 
 	for (let index = 0; index < numberOfCars; index++) {
 		BABYLON.SceneLoader.ImportMesh("", "assets/models/cars/", index+".glb", scene, function (carMeshes, particleSystems, skeletons, animationGroups) {
 			cars[index] = carMeshes[0].getChildMeshes()[0];
 
-			cars[index].position.x = cloneCarInitialPosition.x;
-			cars[index].position.z = cloneCarInitialPosition.z + (20 * index);
 			cars[index].parent = null;
 
-			cloneCars[index] = cars[index].clone("cloneCar");
-			cloneCars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cloneCars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+			let posX = cloneCarInitialPosition.x;
+			// if(index % 2 == 0) {
+			// 	posX = 4;
+			// }
 
-			cars[index].setEnabled(false);
-			cloneCars[index].setEnabled(false);
+			cars[index].position.x = cloneCarInitialPosition.x;
+			cars[index].position.z = cloneCarInitialPosition.z + (distanceBetweenCars * index);
+			
+			lastCarPosition = distanceBetweenCars * index;
+
+			cars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+	
+
+			//cars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+
+			// cloneCars[index] = cars[index].clone("cloneCar");
+			// cloneCars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cloneCars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+
+			// cars[index].setEnabled(false);
+			// cloneCars[index].setEnabled(false);
 		});
+		
 	}
 
 
@@ -533,6 +549,42 @@ var createScene = async function () {
 			}
 
 
+			
+
+			if(carIterator >= numberOfCars-1) {
+				carIterator = 0;
+			} else {
+				carIterator++;
+			}
+
+			//Force Settings
+			var forceDirection = new BABYLON.Vector3(0, 0, -5);
+			var forceMagnitude = -2;
+			var contactLocalRefPoint = BABYLON.Vector3.Zero();
+
+			// does not work in a loop
+			cars[0].physicsImpostor.setLinearVelocity(forceDirection);
+			cars[1].physicsImpostor.setLinearVelocity(forceDirection);
+			cars[2].physicsImpostor.setLinearVelocity(forceDirection);
+			cars[3].physicsImpostor.setLinearVelocity(forceDirection);
+			cars[4].physicsImpostor.setLinearVelocity(forceDirection);
+			cars[5].physicsImpostor.setLinearVelocity(forceDirection);
+			cars[6].physicsImpostor.setLinearVelocity(forceDirection);
+			cars[7].physicsImpostor.setLinearVelocity(forceDirection);
+			
+
+
+			// for (let index = 0; index < numberOfCars.length; index++) {
+			// 	cars[index].physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cars[index].getAbsolutePosition().add(contactLocalRefPoint));
+			// }
+			
+
+			if(cars[carIterator].position.z < chassisMesh.position.z - 10) {
+				cars[carIterator].position.z = lastCarPosition + chassisMesh.position.z;
+			}
+		
+
+
 			// if(carSaved == null) {
 				
 				
@@ -550,70 +602,113 @@ var createScene = async function () {
 
 			//var currentCar = savedCars[savedCars.length-1];
 			
-			cloneCars[carIterator].setEnabled(true);
+			//cloneCars[carIterator].setEnabled(true);
 
 			//Force Settings
-			var forceDirection = new BABYLON.Vector3(0, 0, 1);
-			var forceMagnitude = -0.7;
-			var contactLocalRefPoint = BABYLON.Vector3.Zero();
+			// var forceDirection = new BABYLON.Vector3(0, 0, 1);
+			// var forceMagnitude = -2;
+			// var contactLocalRefPoint = BABYLON.Vector3.Zero();
+			// cars[carIterator].physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cars[carIterator].getAbsolutePosition().add(contactLocalRefPoint));
+			
 
 
-	
-			cloneCars[carIterator].physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cloneCars[carIterator].getAbsolutePosition().add(contactLocalRefPoint));
+			// if(cars[carIterator].position.z < chassisMesh.position.z - 10) {
 
-			console.log(carIterator);
+			// 	let altX;
+			// 	if(carIterator % 2 == 0) {
+			// 		altX == -2;
+			// 	} else {
+			// 		altX = cloneCarInitialPosition.x
+			// 	}
 
-			if(cloneCars[carIterator].position.z < chassisMesh.position.z - 10) {
+			// 	cars[carIterator].position.z = chassisMesh.position.z + cloneCarInitialPosition.z + (100*carIterator); 
+			// 	cars[carIterator].position.x = altX;
 
-				if(carIterator >= numberOfCars-1) {
-					carIterator = 0;
-				} else {
-					carIterator++;
-				}
+			// 	if(carIterator >= numberOfCars-1) {
+			// 		carIterator = 0;
+			// 	} else {
+			// 		carIterator++;
+			// 	}
+
+			// 	cars[carIterator].position.z = chassisMesh.position.z + cloneCarInitialPosition.z; 
+			// 	cars[carIterator].position.x = cloneCarInitialPosition.x;
+
+			// }
+
+
+			// console.log(carIterator);
+
+			// if(cars[carIterator].position.z < chassisMesh.position.z - 10) {
+
+			// 	if(cars[carIterator].physicsImpostor) {
+			// 		cars[carIterator].physicsImpostor.dispose();
+			// 	}
 				
-				//carSaved.dispose();
-				//carSaved = null;
+			// 	//carSaved.dispose();
+			// 	//carSaved = null;
 				
-				//cloneCar.dispose();
+			// 	//cloneCar.dispose();
 
-				cars[carIterator].setEnabled(true);
+			// 	//cars[carIterator].setEnabled(true);
 
-				//cloneCar = car.clone("cloneCar");
-				cloneCars[carIterator].position.z = chassisMesh.position.z + cloneCarInitialPosition.z + (10 * carIterator); 
-				cloneCars[carIterator].position.x = cloneCarInitialPosition.x;
-
-				//cloneCar.rotation = BABYLON.Vector3.Zero();
-
-				cars[carIterator].setEnabled(false);
-
+			// 	//cloneCar = car.clone("cloneCar");
+			// 	cars[carIterator].position.z = chassisMesh.position.z + cloneCarInitialPosition.z + (10 * carIterator); 
+			// 	cars[carIterator].position.x = cloneCarInitialPosition.x;
 				
 
-				//savedCars.push({...car});
-				//let newCar = savedCars[savedCars.length-1];
+			// 	// let next = carIterator + 1;
+			// 	// if (next > numberOfCars-1) {
+			// 	// 	next = 0;
+			// 	// }
 
-				// newCar.parent = null;
-				// newCar.position.x = 2;
-				// newCar.position.z = 80;
+			// 	cars[carIterator].physicsImpostor = new BABYLON.PhysicsImpostor(cars[carIterator], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
 
-				//cloneCar.physicsImpostor = new BABYLON.PhysicsImpostor(cloneCar, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+
+			// 	if(carIterator >= numberOfCars-1) {
+			// 		carIterator = 0;
+			// 	} else {
+			// 		carIterator++;
+			// 	}
+
+			// 	//cars[next].physicsImpostor = new BABYLON.PhysicsImpostor(cars[next], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+
+			// 	//cloneCar.rotation = BABYLON.Vector3.Zero();
+
+			// 	//cars[carIterator].setEnabled(false);
+
 				
-				// console.log("newCar");
-				// console.log("newCar);
+
+			// 	//savedCars.push({...car});
+			// 	//let newCar = savedCars[savedCars.length-1];
+
+			// 	// newCar.parent = null;
+			// 	// newCar.position.x = 2;
+			// 	// newCar.position.z = 80;
+
+			// 	//cloneCar.physicsImpostor = new BABYLON.PhysicsImpostor(cloneCar, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
+				
+			// 	// console.log("newCar");
+			// 	// console.log("newCar);
 				
 
-				// console.log(car.position.z);
-				// //console.log(chassisMesh.position.z );
+			// 	// console.log(car.position.z);
+			// 	// //console.log(chassisMesh.position.z );
 
-				// car.position.x = 2;
-				// car.position.z = 150;
-				// car.position.y = 0;
+			// 	// car.position.x = 2;
+			// 	// car.position.z = 150;
+			// 	// car.position.y = 0;
 
-				// car.rotationQuaternion.x = 0;
-				// car.rotationQuaternion.y = 0;
-				// car.rotationQuaternion.z = 0;
-				// car.rotationQuaternion.w = 0;
+			// 	// car.rotationQuaternion.x = 0;
+			// 	// car.rotationQuaternion.y = 0;
+			// 	// car.rotationQuaternion.z = 0;
+			// 	// car.rotationQuaternion.w = 0;
 
-			}
+			// }
+
+
+			// cars[carIterator].physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cars[carIterator].getAbsolutePosition().add(contactLocalRefPoint));
+
+
 
 		}
 	});
