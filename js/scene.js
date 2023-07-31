@@ -18,23 +18,6 @@ var createScene = async function () {
 	var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0));
 	light.intensity = 0.7;
 
-	//we create some materials for our obstacles
-	redMaterial = new BABYLON.StandardMaterial("RedMaterial");
-	redMaterial.diffuseColor = new BABYLON.Color3(0.8, 0.4, 0.5);
-	redMaterial.emissiveColor = new BABYLON.Color3(0.8, 0.4, 0.5);
-
-	blueMaterial = new BABYLON.StandardMaterial("RedMaterial");
-	blueMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.4, 0.8);
-	blueMaterial.emissiveColor = new BABYLON.Color3(0.5, 0.4, 0.8);
-
-	greenMaterial = new BABYLON.StandardMaterial("RedMaterial");
-	greenMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.8, 0.5);
-	greenMaterial.emissiveColor = new BABYLON.Color3(0.5, 0.8, 0.5);
-
-	//load our wheel material
-	wheelMaterial = new BABYLON.StandardMaterial("WheelMaterial");
-	wheelMaterial.diffuseTexture = new BABYLON.Texture("https://assets.babylonjs.com/environments/wheel.png");
-
 	//we store the wheel face UVs once and reuse for each wheel		
 	wheelUV[0] = new BABYLON.Vector4(0, 0, 1, 1);
 	wheelUV[1] = new BABYLON.Vector4(0, 0.5, 0, 0.5);
@@ -59,56 +42,18 @@ var createScene = async function () {
 	groundTwo.physicsImpostor = new BABYLON.PhysicsImpostor(groundTwo, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0.7 });
 	groundTwo.position.z = 460;
 
-	//create obstacles
-	createObstacle(new BABYLON.Vector3(4, 1, 12), new BABYLON.Vector3(0, 0, 25), new BABYLON.Vector3(-Math.PI / 8, 0, 0), 0);
-	createObstacle(new BABYLON.Vector3(4, 1, 12), new BABYLON.Vector3(25, 0, 0), new BABYLON.Vector3(-Math.PI / 8, Math.PI / 2, 0), 0);
-	createObstacle(new BABYLON.Vector3(4, 1, 12), new BABYLON.Vector3(0, 0, -25), new BABYLON.Vector3(Math.PI / 8, 0, 0), 0);
-	createObstacle(new BABYLON.Vector3(4, 1, 12), new BABYLON.Vector3(-25, 0, 0), new BABYLON.Vector3(Math.PI / 8, Math.PI / 2, 0), 0);
-
-	//we randomize the creation of obstacles by making boxes of arbitrary size and orientation
-	let s = new BABYLON.Vector3();
-	let p = new BABYLON.Vector3();
-	let r = new BABYLON.Vector3();
-	for (let i = 0; i < 20; i++) {
-		let m = Math.random() * 300 - 150 + 5;
-		let m3 = Math.random() * 300 - 150 + 5;
-		let m2 = Math.random() * 10;
-		s.set(m2, m2, m2);
-		p.set(m3, 0, m);
-		r.set(m, m, m);
-		createObstacle(s, p, r, 0);
-	}
-
-	//we randomize some more obstacles by making boxes of arbitrary size and orientation
-	for (let i = 0; i < 30; i++) {
-		let m = Math.random() * 300 - 150 + 5;
-		let m3 = Math.random() * 300 - 150 + 5;
-		let m2 = Math.random() * 3;
-		s.set(m2, m2, m2);
-		p.set(m3, 0, m);
-		r.set(m, m, m);
-		createObstacle(s, p, r, 5);
-	}
-
-	//load the pink spiral ramp mesh
-	//loadTriangleMesh(scene);
-
-	//create our car
+	//import the bus model 
 	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "bus_textured_2.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
 		createVehicle(scene, new BABYLON.Vector3(0, 4, -20), ZERO_QUATERNION, newMeshes);
 	});
 
-	let car;
-	let carSaved = null;
-	let savedCars = [];
-	let cloneCar = null;
+
 	let cloneCarInitialPosition = {
 		x: 2,
 		y: 0,
 		z: 0
 	};
 	let cars = [];
-	let cloneCars = [];
 	let numberOfCars = 9;
 	let carIterator = 0;
 	let distanceBetweenCars = 20;
@@ -120,11 +65,6 @@ var createScene = async function () {
 
 			cars[index].parent = null;
 
-			let posX = cloneCarInitialPosition.x;
-			// if(index % 2 == 0) {
-			// 	posX = 4;
-			// }
-
 			cars[index].position.x = cloneCarInitialPosition.x;
 			cars[index].position.z = cloneCarInitialPosition.z + (distanceBetweenCars * index);
 			
@@ -132,74 +72,24 @@ var createScene = async function () {
 
 			cars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
 	
-
-			//cars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
-
-			// cloneCars[index] = cars[index].clone("cloneCar");
-			// cloneCars[index].physicsImpostor = new BABYLON.PhysicsImpostor(cloneCars[index], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
-
-			// cars[index].setEnabled(false);
-			// cloneCars[index].setEnabled(false);
 		});
 		
 	}
 
 
-
-	// const theBusIsHalfWay = new CustomEvent("theBusIsHalfWay");
-
 	let loadedCityMeshes;
 	let loadedCityOriginalPositions = {};
 
 	//import the city 
-	
+
 	BABYLON.SceneLoader.ImportMesh("", "assets/models/", "city_built_6_double_3.glb", scene, function (cityMeshes) {
 
-		//console.log("cityMeshes");
-		//console.log(cityMeshes);
-
-		// document.querySelector("body").addEventListener("theBusIsHalfWay", updateCity, { meshes: cityMeshes });
-
-
-
-		// document.querySelector("body").addEventListener(theBusIsHalfWay, updateCity(cityMeshes));
-
-		// let updateCity = function(meshes) {
-
-		// 	console.log("the bus is half way");
-
-		// 	console.log(meshes.getChildMeshes());
-
-		// };
-
 		loadedCityMeshes = cityMeshes;
-
-
-
-		// document.querySelector("body").addEventListener("theBusIsHalfWay", (event) => {
-		// 	console.log("the bus is half way");
-
-		// 	//console.log(loadedCityMeshes[0].getChildMeshes());
-		// 	// cityMeshes[0].getChildMeshes().forEach(function (mesh) {
-
-		// 	// 	mesh.position.z += 100;
-		// 	// });
-		// });
-
-
-		//console.log(loadedCityMeshes);
-		//console.log(cityMeshes);
 
 		cityMeshes[0].getChildMeshes().forEach(function (mesh) {
 
 
 			let mass = 0.5;
-
-			// if (mesh.name.search("building") != -1) {
-			// 	mass = 100;
-			// } else {
-			// 	mass = 0.5;
-			// }
 
 			if (mesh.name.search("bridge") != -1) {
 				mass = 0;
@@ -247,29 +137,7 @@ var createScene = async function () {
 				// See below for more details on what can be changed.
 			}
 
-			// console.log("mesh.instances");
-			// console.log(mesh.instances);
-
 		});
-
-		// for (let index = 0; index < cityMeshes[0].getChildMeshes().length; index++) {
-		// 	let currentMesh = cityMeshes[0].getChildMeshes()[index];
-		// 	console.log(currentMesh.name);
-
-		// 	let mass = 10; 
-
-		// 	// if (currentMesh.name.search("House") != -1 || currentMesh.name.search("ROAD") != -1 || currentMesh.name.search("Floor") != -1) {
-		// 	// 	mass = 0;
-		// 	// } else {
-		// 	// 	mass = 10;
-		// 	// }
-
-		// 	currentMesh.parent = null;
-
-
-		//     currentMesh.physicsImpostor = new BABYLON.PhysicsImpostor(currentMesh, BABYLON.PhysicsImpostor.MeshImpostor, { mass: mass, friction: 0.5, restitution: 0.7 });
-
-		// }
 
 	});
 
@@ -430,12 +298,6 @@ var createScene = async function () {
 
 	}
 
-	
-	
-
-
-
-
 	//register prerender callback to initiate 
 	scene.registerBeforeRender(function () {
 
@@ -583,22 +445,8 @@ var createScene = async function () {
 			chassisMesh.position.set(p.x(), p.y(), p.z());
 			chassisMesh.rotationQuaternion.set(q.x(), q.y(), q.z(), q.w());
 
-			//console.log(chassisMesh.position.z);
-			//console.log(ground.getBoundingInfo().boundingBox.maximum.z);
-
-
-			//console.log(theCity[0].getChildMeshes()[0].name);
-
 			let positionInt = parseInt(chassisMesh.position.z);
 			let cityRepositionFrequency = 50;
-
-			
-
-			// if (positionInt >= 50 && + positionInt <= 50 + busPositionIncrementCache) {
-			// 	console.log("position 50");
-			// }
-
-			//console.log(positionInt);
 
 			if(positionInt > 5) {
 				if (positionInt % 35 == 0 && theBusIsHalfWaydispatchedOnce == false) {
@@ -622,8 +470,6 @@ var createScene = async function () {
 			if (chassisMesh.position.z >= groundTwo.position.z + groundTwo.getBoundingInfo().boundingBox.maximum.z + threshold) {
 				groundTwo.position.z += (groundTwo.getBoundingInfo().boundingBox.maximum.z * 4);
 			}
-
-
 			
 
 			if(carIterator >= numberOfCars-1) {
@@ -653,189 +499,9 @@ var createScene = async function () {
 					cars[carIterator].position.z = lastCarPosition + chassisMesh.position.z;
 				}
 			}
-		
-
-
-			// if(carSaved == null) {
-				
-				
-			// 	//carSaved = car;
-
-			// 	// carSaved.position.x = 2;
-			// 	// carSaved.position.z = 50;
-			// 	// carSaved.position.y = 0;
-
-			// 	console.log("carSaved");
-			// 	console.log(carSaved);
-
-				
-			// }
-
-			//var currentCar = savedCars[savedCars.length-1];
-			
-			//cloneCars[carIterator].setEnabled(true);
-
-			//Force Settings
-			// var forceDirection = new BABYLON.Vector3(0, 0, 1);
-			// var forceMagnitude = -2;
-			// var contactLocalRefPoint = BABYLON.Vector3.Zero();
-			// cars[carIterator].physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cars[carIterator].getAbsolutePosition().add(contactLocalRefPoint));
-			
-
-
-			// if(cars[carIterator].position.z < chassisMesh.position.z - 10) {
-
-			// 	let altX;
-			// 	if(carIterator % 2 == 0) {
-			// 		altX == -2;
-			// 	} else {
-			// 		altX = cloneCarInitialPosition.x
-			// 	}
-
-			// 	cars[carIterator].position.z = chassisMesh.position.z + cloneCarInitialPosition.z + (100*carIterator); 
-			// 	cars[carIterator].position.x = altX;
-
-			// 	if(carIterator >= numberOfCars-1) {
-			// 		carIterator = 0;
-			// 	} else {
-			// 		carIterator++;
-			// 	}
-
-			// 	cars[carIterator].position.z = chassisMesh.position.z + cloneCarInitialPosition.z; 
-			// 	cars[carIterator].position.x = cloneCarInitialPosition.x;
-
-			// }
-
-
-			// console.log(carIterator);
-
-			// if(cars[carIterator].position.z < chassisMesh.position.z - 10) {
-
-			// 	if(cars[carIterator].physicsImpostor) {
-			// 		cars[carIterator].physicsImpostor.dispose();
-			// 	}
-				
-			// 	//carSaved.dispose();
-			// 	//carSaved = null;
-				
-			// 	//cloneCar.dispose();
-
-			// 	//cars[carIterator].setEnabled(true);
-
-			// 	//cloneCar = car.clone("cloneCar");
-			// 	cars[carIterator].position.z = chassisMesh.position.z + cloneCarInitialPosition.z + (10 * carIterator); 
-			// 	cars[carIterator].position.x = cloneCarInitialPosition.x;
-				
-
-			// 	// let next = carIterator + 1;
-			// 	// if (next > numberOfCars-1) {
-			// 	// 	next = 0;
-			// 	// }
-
-			// 	cars[carIterator].physicsImpostor = new BABYLON.PhysicsImpostor(cars[carIterator], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
-
-
-			// 	if(carIterator >= numberOfCars-1) {
-			// 		carIterator = 0;
-			// 	} else {
-			// 		carIterator++;
-			// 	}
-
-			// 	//cars[next].physicsImpostor = new BABYLON.PhysicsImpostor(cars[next], BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
-
-			// 	//cloneCar.rotation = BABYLON.Vector3.Zero();
-
-			// 	//cars[carIterator].setEnabled(false);
-
-				
-
-			// 	//savedCars.push({...car});
-			// 	//let newCar = savedCars[savedCars.length-1];
-
-			// 	// newCar.parent = null;
-			// 	// newCar.position.x = 2;
-			// 	// newCar.position.z = 80;
-
-			// 	//cloneCar.physicsImpostor = new BABYLON.PhysicsImpostor(cloneCar, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0.1, friction: 1, restitution: 0.7 });
-				
-			// 	// console.log("newCar");
-			// 	// console.log("newCar);
-				
-
-			// 	// console.log(car.position.z);
-			// 	// //console.log(chassisMesh.position.z );
-
-			// 	// car.position.x = 2;
-			// 	// car.position.z = 150;
-			// 	// car.position.y = 0;
-
-			// 	// car.rotationQuaternion.x = 0;
-			// 	// car.rotationQuaternion.y = 0;
-			// 	// car.rotationQuaternion.z = 0;
-			// 	// car.rotationQuaternion.w = 0;
-
-			// }
-
-
-			// cars[carIterator].physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cars[carIterator].getAbsolutePosition().add(contactLocalRefPoint));
-
-
 
 		}
 	});
 
 	return scene;
 };
-
-
-// function loadTriangleMesh(scene) {
-// 	var physicsWorld = scene.getPhysicsEngine().getPhysicsPlugin().world;
-// 	BABYLON.SceneLoader.ImportMesh("Loft001", "https://raw.githubusercontent.com/RaggarDK/Baby/baby/", "ramp.babylon", scene, function (newMeshes) {
-// 		for (let x = 0; x < newMeshes.length; x++) {
-// 			let mesh = newMeshes[x];
-// 			mesh.position.y -= 2.5;
-// 			mesh.material = redMaterial;
-// 			let positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-// 			let normals = mesh.getVerticesData(BABYLON.VertexBuffer.NormalKind);
-// 			let colors = mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
-// 			let uvs = mesh.getVerticesData(BABYLON.VertexBuffer.UVKind);
-// 			let indices = mesh.getIndices();
-
-// 			mesh.updateFacetData();
-// 			var localPositions = mesh.getFacetLocalPositions();
-// 			var triangleCount = localPositions.length;
-
-// 			let mTriMesh = new Ammo.btTriangleMesh();
-// 			let removeDuplicateVertices = true;
-// 			let tmpPos1 = new Ammo.btVector3(0, 0, 0);
-// 			let tmpPos2 = new Ammo.btVector3(0, 0, 0);
-// 			let tmpPos3 = new Ammo.btVector3(0, 0, 0);
-
-// 			var _g = 0;
-// 			while (_g < triangleCount) {
-// 				var i = _g++;
-// 				var index0 = indices[i * 3];
-// 				var index1 = indices[i * 3 + 1];
-// 				var index2 = indices[i * 3 + 2];
-// 				var vertex0 = new Ammo.btVector3(positions[index0 * 3], positions[index0 * 3 + 1], positions[index0 * 3 + 2]);
-// 				var vertex1 = new Ammo.btVector3(positions[index1 * 3], positions[index1 * 3 + 1], positions[index1 * 3 + 2]);
-// 				var vertex2 = new Ammo.btVector3(positions[index2 * 3], positions[index2 * 3 + 1], positions[index2 * 3 + 2]);
-// 				mTriMesh.addTriangle(vertex0, vertex1, vertex2);
-// 			}
-
-// 			let shape = new Ammo.btBvhTriangleMeshShape(mTriMesh, true, true);
-// 			let localInertia = new Ammo.btVector3(0, 0, 0);
-// 			let transform = new Ammo.btTransform;
-
-// 			transform.setIdentity();
-// 			transform.setOrigin(new Ammo.btVector3(mesh.position.x, mesh.position.y, mesh.position.z));
-// 			transform.setRotation(new Ammo.btQuaternion(
-// 				mesh.rotationQuaternion.x, mesh.rotationQuaternion.y, mesh.rotationQuaternion.z, mesh.rotationQuaternion.w));
-
-// 			let motionState = new Ammo.btDefaultMotionState(transform);
-// 			let rbInfo = new Ammo.btRigidBodyConstructionInfo(0, motionState, shape, localInertia);
-// 			let body = new Ammo.btRigidBody(rbInfo);
-// 			physicsWorld.addRigidBody(body);
-// 		}
-// 	});
-// }
