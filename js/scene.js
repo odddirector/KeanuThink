@@ -1,4 +1,7 @@
 var createScene = async function () {
+
+	let bombEngaged = false;
+
 	// Setup basic scene
 	var scene = new BABYLON.Scene(engine);
 	scene.useRightHandedSystem = true;
@@ -376,6 +379,61 @@ var createScene = async function () {
 
 	}
 
+
+	function badaBoom() {
+		console.log("BOOM!");
+		//console.log(chassisMesh.position);
+
+		// explode the bus
+		var radius = 20;
+		var strength = 20;
+		var physicsHelper = new BABYLON.PhysicsHelper(scene);
+
+		console.log("applyRadialExplosionImpulse");
+
+		BABYLON.ParticleHelper.CreateAsync("explosion", scene).then((set) => {
+			
+			console.log(set);
+
+			//flash
+			// set.systems[0].maxSize = 0.2;
+
+			// //shockwave
+			// set.systems[1].maxSize = 0.4;
+
+			// // fireball
+			// set.systems[2].maxSize = 0.3;
+
+			// // debris
+			// set.systems[3].maxSize = 0.05;
+
+			for (let index = 0; index < set.systems.length; index++) {
+				set.systems[index].emitter = new BABYLON.Vector3(chassisMesh.position.x, chassisMesh.position.y, chassisMesh.position.z);
+			}
+
+			set.systems.forEach(s => {
+				s.disposeOnStop = true;
+			});
+			set.start();
+		});
+
+		setTimeout(() => {
+			physicsHelper.applyRadialExplosionImpulse( // or .applyRadialExplosionForce
+				new BABYLON.Vector3(chassisMesh.position.x, chassisMesh.position.y, chassisMesh.position.z),
+				radius,
+				strength,
+				BABYLON.PhysicsRadialImpulseFalloff.Linear // or BABYLON.PhysicsRadialImpulseFalloff.Constant
+			);
+		}, 500);
+
+	}
+
+	
+	
+
+
+
+
 	//register prerender callback to initiate 
 	scene.registerBeforeRender(function () {
 
@@ -387,10 +445,22 @@ var createScene = async function () {
 		if (vehicleReady) {
 			//get the cars current speed from ammo.js
 			var speed = vehicle.getCurrentSpeedKmHour();
-			//console.log(parseInt(speed)+ " km/h");
+			console.log(parseInt(speed)+ " km/h");
 			var maxSteerVal = 0.2;
 			breakingForce = 0;
 			engineForce = 0;
+
+			//console.log(speed);
+
+			if (speed > 50) {
+				//engage the bomb
+				bombEngaged = true; 
+			}
+
+			if (bombEngaged && speed < 50) {
+				badaBoom();
+				bombEngaged = false;
+			}
 
 			//see if we are accelerating
 			if (actions.acceleration) {
@@ -563,24 +633,20 @@ var createScene = async function () {
 			var contactLocalRefPoint = BABYLON.Vector3.Zero();
 
 			// does not work in a loop
-			cars[0].physicsImpostor.setLinearVelocity(forceDirection);
-			cars[1].physicsImpostor.setLinearVelocity(forceDirection);
-			cars[2].physicsImpostor.setLinearVelocity(forceDirection);
-			cars[3].physicsImpostor.setLinearVelocity(forceDirection);
-			cars[4].physicsImpostor.setLinearVelocity(forceDirection);
-			cars[5].physicsImpostor.setLinearVelocity(forceDirection);
-			cars[6].physicsImpostor.setLinearVelocity(forceDirection);
-			cars[7].physicsImpostor.setLinearVelocity(forceDirection);
+			if (typeof cars[7] !== "undefined") {
+				cars[0].physicsImpostor.setLinearVelocity(forceDirection);
+				cars[1].physicsImpostor.setLinearVelocity(forceDirection);
+				cars[2].physicsImpostor.setLinearVelocity(forceDirection);
+				cars[3].physicsImpostor.setLinearVelocity(forceDirection);
+				cars[4].physicsImpostor.setLinearVelocity(forceDirection);
+				cars[5].physicsImpostor.setLinearVelocity(forceDirection);
+				cars[6].physicsImpostor.setLinearVelocity(forceDirection);
+				cars[7].physicsImpostor.setLinearVelocity(forceDirection);
 			
 
-
-			// for (let index = 0; index < numberOfCars.length; index++) {
-			// 	cars[index].physicsImpostor.applyForce(forceDirection.scale(forceMagnitude), cars[index].getAbsolutePosition().add(contactLocalRefPoint));
-			// }
-			
-
-			if(cars[carIterator].position.z < chassisMesh.position.z - 10) {
-				cars[carIterator].position.z = lastCarPosition + chassisMesh.position.z;
+				if(cars[carIterator].position.z < chassisMesh.position.z - 10) {
+					cars[carIterator].position.z = lastCarPosition + chassisMesh.position.z;
+				}
 			}
 		
 
