@@ -7,3 +7,94 @@
     font-weight: bold;
     color: white;
 }
+
+/* #canvasZone { */
+/* height: 50vh; */
+/* width: 80%;
+    position: absolute;
+    right: 0; */
+/* } */
+
+#typing {
+    position: absolute;
+    left: 0;
+    top: 0%;
+    height: 100vh;
+    width: 90%;
+    background-color: transparent;
+    padding: 10px;
+    font-size: 40px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: rgb(255, 214, 33);
+    text-shadow: 2px 2px #c81e00;
+    font-weight: bold;
+    caret-color: red;
+    transition: all 0.5s;
+}
+
+::-moz-selection {
+    /* Code for Firefox */
+    color: white;
+    background: rgba(255, 204, 0, 0.7);
+}
+
+::selection {
+    color: white;
+    background: rgba(255, 204, 0, 0.7);
+}
+
+#f_work {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 8px;
+    width: 130px;
+    background-color: white;
+    color: rgb(85, 1, 1);
+    border-radius: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+#f_work:hover {
+    background-color: rgb(208, 255, 0);
+}
+
+#play_message {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    pointer-events: none;
+    text-align: center;
+    bottom: 50%;
+    padding-bottom: 10px;
+    font-size: 50px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: cyan;
+    text-shadow: 2px 2px white;
+    transition: all 0.8s;
+}
+
+b {
+    font-weight: bold;
+}
+
+/* ------------------- Play Mode */
+
+body.play #f_work {
+    display: none;
+}
+
+body.play #typing {
+    top: -100%;
+}
+
+body.play #play_message {
+    bottom: 0;
+    opacity: 1;
+    font-size: 13px;
+    color: black;
+}
+

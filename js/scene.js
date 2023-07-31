@@ -86,7 +86,7 @@ var createScene = async function () {
 	let cars = [];
 	let numberOfCars = 9;
 	let carIterator = 0;
-	let distanceBetweenCars = 20;
+	let distanceBetweenCars = 30;
 	let lastCarPosition;
 
 	for (let index = 0; index < numberOfCars; index++) {
@@ -291,7 +291,7 @@ var createScene = async function () {
 		//console.log(chassisMesh.position);
 
 		// explode the bus
-		var radius = 20;
+		var radius = 15;
 		var strength = 10;
 		var physicsHelper = new BABYLON.PhysicsHelper(scene);
 
